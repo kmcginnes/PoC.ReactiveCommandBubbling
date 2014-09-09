@@ -16,7 +16,7 @@
                             <Run Text="{Binding FirstName}"/>
                             <Run Text="{Binding LastName}"/>
                         </TextBlock>
-                        <Button Content="Delete" HorizontalAlignment="Right" Padding="10,5"/>
+                        <Button Content="Delete" Command="{Binding Delete}" CommandParameter="{Binding}" HorizontalAlignment="Right" Padding="10,5"/>
                     </st:AutoGrid>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
