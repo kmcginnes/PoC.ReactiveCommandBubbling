@@ -1,4 +1,5 @@
-﻿using System.Reactive.Linq;
+﻿using System;
+using System.Reactive.Linq;
 using ReactiveUI;
 
 namespace PoC.ReactiveCommandBubbling
@@ -7,11 +8,15 @@ namespace PoC.ReactiveCommandBubbling
     {
         public MainViewModel()
         {
-            People = new ReactiveList<PersonViewModel>
+            People = new ReactiveList<PersonViewModel>();
+            People.ActOnEveryObject(x => x.Delete.Subscribe(p => People.Remove((PersonViewModel) p)), _ => { });
+            People.AddRange(new[]
             {
                 new PersonViewModel("Jerry", "Seinfeld"),
-                new PersonViewModel("George", "Costanza")
-            };
+                new PersonViewModel("George", "Costanza"),
+                new PersonViewModel("Elaine", "Something"),
+                new PersonViewModel("Newman", "Something"),
+            });
         }
 
         public ReactiveList<PersonViewModel> People { get; private set; }
