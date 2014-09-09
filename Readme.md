@@ -21,7 +21,7 @@ Solution
 
 Child view model with command declaration and can execute.
 
-```
+```c#
 public class PersonViewModel : ReactiveObject
 {
     public PersonViewModel(string first, string last)
@@ -41,7 +41,7 @@ public class PersonViewModel : ReactiveObject
 
 Parent view model with command subscription. We use `ActOnEveryObject` extension method to ensure that as new items are added to the collection, the delete command gets wired up.
 
-```
+```c#
 public class MainViewModel : ReactiveObject
 {
     public MainViewModel()
