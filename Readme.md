@@ -1,5 +1,5 @@
-Bubble Commands
-===============
+Bubble Commands with ReactiveUI
+===============================
 
 So often in MVVM do we run across the situation where, in a list of elements we must perform an operation involving both the single element and the list itself.
 
@@ -7,19 +7,12 @@ The cannonical example is the delete button on each element in the list. The act
 
 There are many ways to solve this problem: Caliburn Actions, RelativeSource Ancestor, event aggregation, etc.
 
-Here is another. This involves ReactiveUI's ReactiveCommand.
-
-The goal is to put the command on the singular element, but allow the view model containing the list to control the list manipulation.
-
-ReactiveCommand is both a typical command, and something completely different. It has an execute and a can execute set of operations. But it implements them in a very unique way.
-
-CanExecute is a stream of events of type bool. In other words: `Observable<bool>`. 
-
+Using ReactiveUI's ReactiveCommand coupled with ReactiveList we can handle this scenario with grace.
 
 Solution
 --------
 
-Child view model with command declaration and can execute.
+We can declare the command on the child view model.
 
 ```c#
 public class PersonViewModel : ReactiveObject
@@ -39,7 +32,28 @@ public class PersonViewModel : ReactiveObject
 }
 ```
 
-Parent view model with command subscription. We use `ActOnEveryObject` extension method to ensure that as new items are added to the collection, the delete command gets wired up.
+This allows easy binding of the command in the view.
+
+```XML
+<ItemsControl ItemsSource="{Binding People}">
+    <ItemsControl.ItemTemplate>
+        <DataTemplate DataType="{x:Type local:PersonViewModel}">
+            <st:AutoGrid Columns="Auto,*">
+                <TextBlock FontSize="18">
+                    <Run Text="{Binding FirstName}"/>
+                    <Run Text="{Binding LastName}"/>
+                </TextBlock>
+                <Button Content="Delete" 
+                        Command="{Binding Delete}" 
+                        CommandParameter="{Binding}" />
+            </st:AutoGrid>
+        </DataTemplate>
+    </ItemsControl.ItemTemplate>
+</ItemsControl>
+```
+__Note:__ Snipped some styling
+
+The parent view model can subscribe to the commands execution. The execution still is originating from the command on the item, but we can simply listen for its execution from anywhere the instance is available. Since the item is being passed as the parameter, we have access to all of its public values.
 
 ```c#
 public class MainViewModel : ReactiveObject
@@ -61,4 +75,10 @@ public class MainViewModel : ReactiveObject
 }
 ```
 
+We use the convenient extension method `ActOnEveryObject` off of ReactiveList to ensure that as new items are added, the delete handler will be wired up.
 
+
+Conclusion
+----------
+
+This technique is a great way to simplify what should be an easy task.
